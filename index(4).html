@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réservation du Plateau - 8 Bureaux & Ailleurs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
+
+  <!-- EN-TÊTE -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600 p-2.5 rounded-xl shadow-md">
+          <i class="fa-solid fa-building-user text-xl text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">Gestion du Plateau</h1>
+          <p class="text-xs text-slate-400" id="current-date-badge">Aujourd'hui : Chargement...</p>
+        </div>
+      </div>
+
+      <!-- SÉLECTEUR SEMAINE PAIRE / IMPAIRE -->
+      <div class="bg-slate-800 p-1 rounded-xl flex border border-slate-700 shadow-inner">
+        <button id="btn-paire" onclick="setWeekType('paire')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Semaine Paire</span>
+          <span id="label-paire-range" class="text-[10px] opacity-70 font-normal"></span>
+        </button>
+        <button id="btn-impaire" onclick="setWeekType('impaire')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Semaine Impaire</span>
+          <span id="label-impaire-range" class="text-[10px] opacity-70 font-normal"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- ONGLETS DU LUNDI AU VENDREDI -->
+    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between gap-1" id="days-container">
+      <!-- Généré par JS -->
+    </div>
+
+    <!-- ZONE DE CONFIGURATION / INSTRUCTIONS -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-wifi text-emerald-600 text-xl animate-pulse"></i>
+        <p class="text-sm text-blue-900">
+          <span class="font-semibold text-emerald-700">Connecté en direct !</span> Cliquez sur un bureau pour réserver ou libérer votre place.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-semibold">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Libre
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-100 text-blue-800">
+          <span class="w-2 h-2 rounded-full bg-blue-600"></span> Occupé
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-200 text-slate-700">
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span> Ailleurs
+        </span>
+      </div>
+    </div>
+
+    <!-- SCHÉMA DU PLATEAU -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-map text-slate-400"></i>
+          Plan du Plateau
+        </h2>
+        <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200" id="current-day-label">
+          --
+        </span>
+      </div>
+
+      <!-- PLATEAU DE BUREAUX -->
+      <div class="max-w-4xl mx-auto space-y-8">
+        
+        <!-- ÎLOT PRINCIPAL (2x4) AVEC MUR SUR LA DROITE -->
+        <div class="flex items-stretch gap-2 justify-center">
+          
+          <!-- LES 8 BUREAUX COLLÉS (2 RANGÉES x 4 COLONNES) -->
+          <div class="grid grid-cols-4 gap-2 flex-grow max-w-2xl bg-slate-200 p-2.5 rounded-2xl border border-slate-300 shadow-inner">
+            <!-- Rangée du haut (Bureaux 1, 2, 3, 4) -->
+            <div id="desk-card-1"></div>
+            <div id="desk-card-2"></div>
+            <div id="desk-card-3"></div>
+            <div id="desk-card-4"></div>
+
+            <!-- Rangée du bas (Bureaux 5, 6, 7, 8) -->
+            <div id="desk-card-5"></div>
+            <div id="desk-card-6"></div>
+            <div id="desk-card-7"></div>
+            <div id="desk-card-8"></div>
+          </div>
+
+          <!-- LE MUR (LE LONG DES BUREAUX 4 ET 8) -->
+          <div class="w-12 bg-slate-300 border-2 border-dashed border-slate-400 rounded-2xl flex flex-col justify-center items-center text-slate-500 font-bold tracking-widest text-xs select-none shadow-sm">
+            <span class="rotate-90 uppercase">MUR</span>
+          </div>
+        </div>
+
+        <!-- ZONE "AILLEURS" (2 BUREAUX GRIS SÉPARÉS) -->
+        <div class="pt-4 border-t border-slate-200">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fa-solid fa-couch text-slate-400 text-sm"></i>
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Zone Ailleurs / Flex</h3>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
+            <div id="desk-card-9" class="col-span-1"></div>
+            <div id="desk-card-10" class="col-span-1"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TABLEAU RÉCAPITULATIF SEMAINE -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+        <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-table-list text-slate-400"></i>
+          Récapitulatif de la semaine
+        </h2>
+        <div class="flex gap-2">
+          <button onclick="clearCurrentWeek()" class="text-xs text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 font-medium px-3 py-1.5 rounded-lg transition">
+            Vider cette semaine
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-100/70 text-slate-600 border-b border-slate-200">
+              <th class="p-3 font-semibold">Bureau</th>
+              <th class="p-3 font-semibold text-center" id="th-mon">Lun</th>
+              <th class="p-3 font-semibold text-center" id="th-tue">Mar</th>
+              <th class="p-3 font-semibold text-center" id="th-wed">Mer</th>
+              <th class="p-3 font-semibold text-center" id="th-thu">Jeu</th>
+              <th class="p-3 font-semibold text-center" id="th-fri">Ven</th>
+            </tr>
+          </thead>
+          <tbody id="summary-table-body" class="divide-y divide-slate-100 text-slate-700">
+            <!-- Rempli en JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL RÉSERVATION -->
+  <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-slate-800 text-lg" id="modal-title">Réserver</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 mb-4" id="modal-subtitle">Saisissez votre prénom pour réserver.</p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nom / Prénom</label>
+          <input type="text" id="user-name-input" placeholder="Ex: Thomas" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button id="btn-modal-save" onclick="saveReservation()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl text-sm transition">
+            Valider
+          </button>
+          <button id="btn-modal-delete" onclick="deleteReservation()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold py-2 px-4 rounded-xl text-sm transition hidden">
+            Libérer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FIREBASE_URL = "https://cisc-reza-bureaux-default-rtdb.europe-west1.firebasedatabase.app/";
+
+    const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+    const DAY_NAMES = { mon: 'Lundi', tue: 'Mardi', wed: 'Mercredi', thu: 'Jeudi', fri: 'Vendredi' };
+    const DESKS = [
+      { id: 1, name: "Bureau 1", isAilleurs: false },
+      { id: 2, name: "Bureau 2", isAilleurs: false },
+      { id: 3, name: "Bureau 3", isAilleurs: false },
+      { id: 4, name: "Bureau 4", isAilleurs: false },
+      { id: 5, name: "Bureau 5", isAilleurs: false },
+      { id: 6, name: "Bureau 6", isAilleurs: false },
+      { id: 7, name: "Bureau 7", isAilleurs: false },
+      { id: 8, name: "Bureau 8", isAilleurs: false },
+      { id: 9, name: "Ailleurs 1", isAilleurs: true },
+      { id: 10, name: "Ailleurs 2", isAilleurs: true }
+    ];
+
+    let currentWeekType = 'paire';
+    let currentDay = 'mon';
+    let activeDeskId = null;
+    let reservations = {};
+
+    function getISOWeekNumber(d) {
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1)/7);
+    }
+
+    function getMondayOfISOWeek(week, year) {
+      const simple = new Date(year, 0, 1 + (week - 1) * 7);
+      const dow = simple.getDay();
+      const ISOweekStart = simple;
+      if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+      else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+      return ISOweekStart;
+    }
+
+    function formatDateShort(date) {
+      const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+      return `${date.getDate()} ${months[date.getMonth()]}`;
+    }
+
+    function initDates() {
+      const today = new Date();
+      const currentWeekNum = getISOWeekNumber(today);
+      const currentYear = today.getFullYear();
+
+      currentWeekType = (currentWeekNum % 2 === 0) ? 'paire' : 'impaire';
+
+      let paireWeekNum = (currentWeekNum % 2 === 0) ? currentWeekNum : currentWeekNum + 1;
+      let impaireWeekNum = (currentWeekNum % 2 !== 0) ? currentWeekNum : currentWeekNum + 1;
+
+      const mondayPaire = getMondayOfISOWeek(paireWeekNum, currentYear);
+      const fridayPaire = new Date(mondayPaire);
+      fridayPaire.setDate(mondayPaire.getDate() + 4);
+
+      const mondayImpaire = getMondayOfISOWeek(impaireWeekNum, currentYear);
+      const fridayImpaire = new Date(mondayImpaire);
+      fridayImpaire.setDate(mondayImpaire.getDate() + 4);
+
+      document.getElementById('label-paire-range').textContent = `(N°${paireWeekNum}) ${formatDateShort(mondayPaire)} - ${formatDateShort(fridayPaire)}`;
+      document.getElementById('label-impaire-range').textContent = `(N°${impaireWeekNum}) ${formatDateShort(mondayImpaire)} - ${formatDateShort(fridayImpaire)}`;
+
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById('current-date-badge').textContent = `Aujourd'hui : ${today.toLocaleDateString('fr-FR', options)}`;
+    }
+
+    function getDayDate(dayIndex, weekType) {
+      const today = new Date();
+      const currentWeekNum = getISOWeekNumber(today);
+      const currentYear = today.getFullYear();
+
+      let targetWeek = currentWeekNum;
+      if (weekType === 'paire' && currentWeekNum % 2 !== 0) targetWeek = currentWeekNum + 1;
+      if (weekType === 'impaire' && currentWeekNum % 2 === 0) targetWeek = currentWeekNum + 1;
+
+      const monday = getMondayOfISOWeek(targetWeek, currentYear);
+      const targetDate = new Date(monday);
+      targetDate.setDate(monday.getDate() + dayIndex);
+      return formatDateShort(targetDate);
+    }
+
+    // --- SYNCHRONISATION EN TEMPS RÉEL VIA FIREBASE ---
+    async function loadData() {
+      try {
+        const res = await fetch(`${FIREBASE_URL}reservations.json`);
+        if (res.ok) {
+          const data = await res.json();
+          reservations = data || {};
+          renderAll();
+        }
+      } catch (e) {
+        console.error("Erreur de chargement Firebase", e);
+      }
+    }
+
+    async function syncKey(key, value) {
+      try {
+        if (value === null) {
+          await fetch(`${FIREBASE_URL}reservations/${key}.json`, { method: 'DELETE' });
+        } else {
+          await fetch(`${FIREBASE_URL}reservations/${key}.json`, {
+            method: 'PUT',
+            body: JSON.stringify(value)
+          });
+        }
+      } catch (e) {
+        console.error("Erreur de sauvegarde Firebase", e);
+      }
+    }
+
+    async function syncFullWeekClear(weekType) {
+      try {
+        const res = await fetch(`${FIREBASE_URL}reservations.json`);
+        if (res.ok) {
+          const data = await res.json() || {};
+          Object.keys(data).forEach(key => {
+            if (key.startsWith(`${weekType}_`)) delete data[key];
+          });
+          await fetch(`${FIREBASE_URL}reservations.json`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+          });
+          reservations = data;
+          renderAll();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function getReservationKey(deskId, day = currentDay, weekType = currentWeekType) {
+      return `${weekType}_${day}_desk_${deskId}`;
+    }
+
+    function setWeekType(type) {
+      currentWeekType = type;
+      renderAll();
+    }
+
+    function setDay(day) {
+      currentDay = day;
+      renderAll();
+    }
+
+    function renderAll() {
+      renderWeekTypeSelector();
+      renderDayTabs();
+      renderDesks();
+      renderSummaryTable();
+    }
+
+    function renderWeekTypeSelector() {
+      const btnPaire = document.getElementById('btn-paire');
+      const btnImpaire = document.getElementById('btn-impaire');
+
+      if (currentWeekType === 'paire') {
+        btnPaire.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center bg-blue-600 text-white shadow-sm";
+        btnImpaire.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center text-slate-400 hover:text-white";
+      } else {
+        btnImpaire.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center bg-blue-600 text-white shadow-sm";
+        btnPaire.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center text-slate-400 hover:text-white";
+      }
+    }
+
+    function renderDayTabs() {
+      const container = document.getElementById('days-container');
+      container.innerHTML = '';
+
+      DAYS.forEach((dayKey, idx) => {
+        const isActive = currentDay === dayKey;
+        const dateStr = getDayDate(idx, currentWeekType);
+        
+        let reservedCount = 0;
+        DESKS.forEach(desk => {
+          if (reservations[getReservationKey(desk.id, dayKey, currentWeekType)]) reservedCount++;
+        });
+
+        const btn = document.createElement('button');
+        btn.onclick = () => setDay(dayKey);
+        btn.className = `flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border ${
+          isActive 
+            ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
+            : 'bg-white text-slate-600 border-transparent hover:bg-slate-100'
+        }`;
+
+        btn.innerHTML = `
+          <span class="font-bold text-sm">${DAY_NAMES[dayKey]}</span>
+          <span class="${isActive ? 'text-slate-300' : 'text-slate-400'} text-[10px]">${dateStr}</span>
+          <span class="mt-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+            reservedCount === 10 ? 'bg-rose-500/20 text-rose-300' : isActive ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-600'
+          }">${reservedCount}/10 occupés</span>
+        `;
+        container.appendChild(btn);
+      });
+
+      const dayIdx = DAYS.indexOf(currentDay);
+      document.getElementById('current-day-label').textContent = `${DAY_NAMES[currentDay]} ${getDayDate(dayIdx, currentWeekType)} (${currentWeekType.toUpperCase()})`;
+    }
+
+    function renderDesks() {
+      DESKS.forEach(desk => {
+        const slot = document.getElementById(`desk-card-${desk.id}`);
+        if (!slot) return;
+
+        const reservedName = reservations[getReservationKey(desk.id)];
+        const isOccupied = !!reservedName;
+
+        let bgStyle = isOccupied 
+          ? 'bg-blue-600 text-white border-blue-700 shadow-md ring-2 ring-blue-300' 
+          : desk.isAilleurs 
+            ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300' 
+            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300';
+
+        let iconColor = isOccupied ? 'text-blue-200' : desk.isAilleurs ? 'text-slate-400' : 'text-emerald-500';
+
+        slot.className = `h-24 p-3 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between select-none ${bgStyle}`;
+        slot.onclick = () => openModal(desk.id);
+
+        slot.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold tracking-tight">${desk.name}</span>
+            <i class="fa-solid ${isOccupied ? 'fa-user-check' : desk.isAilleurs ? 'fa-couch' : 'fa-desktop'} ${iconColor} text-xs"></i>
+          </div>
+          <div class="mt-auto">
+            ${isOccupied ? `
+              <div class="font-bold text-sm truncate">${reservedName}</div>
+              <div class="text-[10px] text-blue-100 flex items-center gap-1"><i class="fa-solid fa-lock text-[8px]"></i> Occupé</div>
+            ` : `
+              <div class="text-xs font-medium opacity-60">Libre</div>
+              <div class="text-[10px] opacity-40">Cliquer pour réserver</div>
+            `}
+          </div>
+        `;
+      });
+    }
+
+    function renderSummaryTable() {
+      const tbody = document.getElementById('summary-table-body');
+      tbody.innerHTML = '';
+
+      DAYS.forEach((dayKey, idx) => {
+        const th = document.getElementById(`th-${dayKey}`);
+        if (th) th.textContent = `${DAY_NAMES[dayKey].slice(0, 3)}. ${getDayDate(idx, currentWeekType)}`;
+      });
+
+      DESKS.forEach(desk => {
+        const tr = document.createElement('tr');
+        if (desk.isAilleurs) tr.className = "bg-slate-50/60";
+
+        let html = `<td class="p-3 font-semibold text-slate-800 border-r border-slate-100 flex items-center gap-2">
+          <span class="${desk.isAilleurs ? 'text-slate-400' : 'text-blue-500'} font-mono">#${desk.id}</span>
+          ${desk.name}
+        </td>`;
+
+        DAYS.forEach(dayKey => {
+          const name = reservations[getReservationKey(desk.id, dayKey, currentWeekType)];
+          if (name) {
+            html += `<td class="p-2 text-center border-r border-slate-100">
+              <span class="inline-block px-2 py-1 rounded-md bg-blue-100 text-blue-900 font-semibold text-[11px] truncate max-w-[90px] shadow-sm">${name}</span>
+            </td>`;
+          } else {
+            html += `<td class="p-2 text-center text-slate-300 border-r border-slate-100 font-light">-</td>`;
+          }
+        });
+
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(deskId) {
+      activeDeskId = deskId;
+      const desk = DESKS.find(d => d.id === deskId);
+      const existingName = reservations[getReservationKey(deskId)];
+      const dayIdx = DAYS.indexOf(currentDay);
+      const dateStr = getDayDate(dayIdx, currentWeekType);
+
+      document.getElementById('modal-title').textContent = `${desk.name}`;
+      document.getElementById('modal-subtitle').textContent = `${DAY_NAMES[currentDay]} ${dateStr} (${currentWeekType})`;
+      
+      const input = document.getElementById('user-name-input');
+      const deleteBtn = document.getElementById('btn-modal-delete');
+
+      if (existingName) {
+        input.value = existingName;
+        deleteBtn.classList.remove('hidden');
+      } else {
+        input.value = '';
+        deleteBtn.classList.add('hidden');
+      }
+
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('modal').classList.add('flex');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+      document.getElementById('modal').classList.remove('flex');
+      activeDeskId = null;
+    }
+
+    async function saveReservation() {
+      const input = document.getElementById('user-name-input');
+      const name = input.value.trim();
+
+      if (!name) return alert('Veuillez entrer un prénom.');
+
+      const key = getReservationKey(activeDeskId);
+      reservations[key] = name;
+      
+      closeModal();
+      renderAll();
+      await syncKey(key, name);
+    }
+
+    async function deleteReservation() {
+      const key = getReservationKey(activeDeskId);
+      delete reservations[key];
+
+      closeModal();
+      renderAll();
+      await syncKey(key, null);
+    }
+
+    async function clearCurrentWeek() {
+      if (confirm(`Voulez-vous supprimer toutes les réservations pour la Semaine ${currentWeekType.toUpperCase()} ?`)) {
+        await syncFullWeekClear(currentWeekType);
+      }
+    }
+
+    // Initialisation
+    initDates();
+    loadData();
+    // Rafraîchissement automatique toutes les 3 secondes pour que tout le monde voit les changements en direct
+    setInterval(loadData, 3000);
+  </script>
+</body>
+</html>

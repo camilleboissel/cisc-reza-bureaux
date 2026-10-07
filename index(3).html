@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réservation du Plateau - 8 Bureaux & Ailleurs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
+
+  <!-- EN-TÊTE -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600 p-2.5 rounded-xl shadow-md">
+          <i class="fa-solid fa-building-user text-xl text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">Gestion du Plateau</h1>
+          <p class="text-xs text-slate-400" id="current-date-badge">Aujourd'hui : Chargement...</p>
+        </div>
+      </div>
+
+      <!-- SÉLECTEUR SEMAINE PAIRE / IMPAIRE -->
+      <div class="bg-slate-800 p-1 rounded-xl flex border border-slate-700 shadow-inner">
+        <button id="btn-paire" onclick="setWeekType('paire')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Semaine Paire</span>
+          <span id="label-paire-range" class="text-[10px] opacity-70 font-normal"></span>
+        </button>
+        <button id="btn-impaire" onclick="setWeekType('impaire')" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Semaine Impaire</span>
+          <span id="label-impaire-range" class="text-[10px] opacity-70 font-normal"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- ONGLETS DU LUNDI AU VENDREDI -->
+    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between gap-1" id="days-container">
+      <!-- Généré par JS -->
+    </div>
+
+    <!-- ZONE DE CONFIGURATION / INSTRUCTIONS -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-wifi text-emerald-600 text-xl animate-pulse"></i>
+        <p class="text-sm text-blue-900">
+          <span class="font-semibold text-emerald-700">Connecté en direct !</span> Cliquez sur un bureau pour réserver ou libérer votre place.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-semibold">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Libre
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-100 text-blue-800">
+          <span class="w-2 h-2 rounded-full bg-blue-600"></span> Occupé
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-200 text-slate-700">
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span> Ailleurs
+        </span>
+      </div>
+    </div>
+
+    <!-- SCHÉMA DU PLATEAU -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div class="flex justify-between items-center mb-6">
