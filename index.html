@@ -10,7 +10,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
 
-    /* STYLES GARANTIS SANS BUGS TAILWIND DYNAMIQUES SUR SAFARI/VERCEL */
     .desk-card {
       height: 112px;
       border-radius: 12px;
@@ -27,16 +26,20 @@
     }
     .desk-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
-    /* ÉTATS DES BUREAUX */
     .desk-free-core { background-color: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
     .desk-free-flex { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
 
-    /* OCCUPÉ JOURNÉE ENTIÈRE */
     .desk-occupied-full {
       background-color: #2563eb !important;
       border-color: #1d4ed8 !important;
       color: #ffffff !important;
       box-shadow: 0 4px 10px -1px rgba(37, 99, 235, 0.3);
+    }
+
+    .plan-locked {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(30%);
     }
   </style>
 </head>
@@ -50,11 +53,10 @@
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">Gestion du Plateau</h1>
-          <p class="text-xs text-slate-400" id="header-date">Aujourd'hui : Chargement...</p>
+          <p class="text-xs text-slate-400" id="header-date">Chargement...</p>
         </div>
       </div>
 
-      <!-- SÉLECTEUR SEMAINE CHRONOLOGIQUE -->
       <div class="bg-slate-800 p-1 rounded-xl flex border border-slate-700 shadow-inner" id="week-selector-container">
         <button id="btn-week-0" onclick="App.switchWeekIndex(0)" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 bg-blue-600 text-white shadow-sm">
           <div class="flex items-center gap-2">
@@ -76,7 +78,7 @@
 
   <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
 
-    <!-- BANDEAU IDENTITÉ UTILISATEUR -->
+    <!-- IDENTITÉ -->
     <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-3 text-xs">
       <div class="flex items-center gap-2">
         <span class="text-slate-500">Vous êtes connecté(e) en tant que :</span>
@@ -87,7 +89,7 @@
       </button>
     </div>
 
-    <!-- ONGLETS DE JOURS (LUN -> VEN) -->
+    <!-- ONGLETS JOURS -->
     <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between gap-1.5" id="day-tabs-container">
       <button onclick="App.switchDay('mon')" id="tab-mon" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-slate-900 text-white border-slate-900 shadow-sm">
         <span class="font-bold text-sm">Lundi</span>
@@ -111,6 +113,22 @@
       </button>
     </div>
 
+    <!-- STATUTS TT / ABSENT -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Mon statut pour cette journée</h3>
+        <p class="text-[11px] text-slate-500">Déclarez votre absence ou votre télétravail (bloque la réservation)</p>
+      </div>
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button id="btn-status-tt" onclick="App.toggleStatus('TT')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm">
+          <i class="fa-solid fa-house-laptop mr-1.5 text-blue-500"></i> Télétravail
+        </button>
+        <button id="btn-status-absent" onclick="App.toggleStatus('Absent')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm">
+          <i class="fa-solid fa-user-slash mr-1.5 text-rose-500"></i> Absent
+        </button>
+      </div>
+    </div>
+
     <!-- LÉGENDE -->
     <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
       <p class="text-xs md:text-sm text-blue-900 font-medium">
@@ -129,7 +147,8 @@
       </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+    <!-- PLAN DU PLATEAU -->
+    <div id="plateau-container" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6 transition-all">
       <div class="flex justify-between items-center border-b border-slate-100 pb-4">
         <h2 class="text-md md:text-lg font-bold text-slate-800 flex items-center gap-2">
           <i class="fa-solid fa-map-location-dot text-slate-400"></i>
@@ -141,7 +160,6 @@
       </div>
 
       <div class="max-w-4xl mx-auto space-y-8">
-        <!-- ÎLOT PRINCIPAL (8 BUREAUX 2x4 + MUR SUR LA DROITE) -->
         <div class="flex items-stretch gap-3 justify-center">
           <div class="grid grid-cols-4 gap-2.5 flex-grow max-w-2xl bg-slate-200 p-3 rounded-2xl border border-slate-300 shadow-inner">
             <div id="desk-card-1" class="desk-card desk-free-core" onclick="App.openModal(1)"></div>
@@ -158,7 +176,6 @@
           </div>
         </div>
 
-        <!-- ZONE AILLEURS / FLEX -->
         <div class="pt-4 border-t border-slate-100">
           <div class="flex items-center gap-2 mb-3">
             <i class="fa-solid fa-couch text-slate-400 text-sm"></i>
@@ -172,6 +189,7 @@
       </div>
     </div>
 
+    <!-- RÉCAPITULATIF -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
         <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">
@@ -195,7 +213,6 @@
             </tr>
           </thead>
           <tbody id="summary-table-body" class="divide-y divide-slate-100 text-slate-700">
-            <!-- Rempli en JS -->
           </tbody>
         </table>
       </div>
@@ -203,6 +220,7 @@
 
   </main>
 
+  <!-- MODALE -->
   <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -217,7 +235,7 @@
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Votre Prénom</label>
-          <input type="text" id="modal-username" placeholder="Ex: Thomas" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+          <input type="text" id="modal-username" placeholder="Ex: Camille" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
         </div>
 
         <div>
@@ -255,9 +273,6 @@
   </div>
 
   <script>
-    /**
-     * MODULE APPLICATION ROBUSTE
-     */
     const App = {
       FIREBASE_URL: "https://cisc-reza-bureaux-default-rtdb.europe-west1.firebasedatabase.app/",
       DAYS: ['mon', 'tue', 'wed', 'thu', 'fri'],
@@ -275,20 +290,19 @@
         { id: 10, name: "Ailleurs 2", isAilleurs: true }
       ],
 
-      currentWeekType: 'paire',
+      currentWeekIndex: 0,
       currentDay: 'mon',
       activeDeskId: null,
       reservations: {},
+      statuses: {},
       myIdentity: localStorage.getItem('office_user_identity') || '',
       weeksList: [],
 
-      // INITIALISATION SÉCURISÉE
       init() {
         try {
           this.initCalendar();
           this.renderAll();
           this.loadFirebase();
-          setInterval(() => this.loadFirebase(), 3000);
         } catch (e) {
           console.error("Erreur init:", e);
         }
@@ -296,7 +310,7 @@
 
       formatDateShort(d) {
         const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-        return `${d.getDate()} ${months[d.getMonth()]}`;
+        return d.getDate() + ' ' + months[d.getMonth()];
       },
 
       initCalendar() {
@@ -310,53 +324,53 @@
         const mon2 = new Date(mon1.getFullYear(), mon1.getMonth(), mon1.getDate() + 7);
         const fri2 = new Date(mon2.getFullYear(), mon2.getMonth(), mon2.getDate() + 4);
 
-        // Numéro de semaine ISO universel
-        const target = new Date(mon1.valueOf());
-        const dayNr = (mon1.getDay() + 6) % 7;
-        target.setDate(target.getDate() - dayNr + 3);
-        const firstThursday = target.valueOf();
-        target.setMonth(0, 1);
-        if (target.getDay() !== 4) target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
-        const weekNum1 = 1 + Math.ceil((firstThursday - target) / 604800000);
+        const target1 = new Date(mon1.valueOf());
+        const dayNr1 = (mon1.getDay() + 6) % 7;
+        target1.setDate(target1.getDate() - dayNr1 + 3);
+        const firstThursday1 = target1.valueOf();
+        target1.setMonth(0, 1);
+        if (target1.getDay() !== 4) target1.setMonth(0, 1 + ((4 - target1.getDay() + 7) % 7));
+        const weekNum1 = 1 + Math.ceil((firstThursday1 - target1) / 604800000);
         const weekNum2 = weekNum1 + 1;
 
         const type1 = (weekNum1 % 2 === 0) ? 'paire' : 'impaire';
         const type2 = (weekNum2 % 2 === 0) ? 'paire' : 'impaire';
 
         this.weeksList = [
-          { type: type1, num: weekNum1, monday: mon1, label: `Semaine ${type1.charAt(0).toUpperCase() + type1.slice(1)}`, range: `(N°${weekNum1}) ${this.formatDateShort(mon1)} - ${this.formatDateShort(fri1)}` },
-          { type: type2, num: weekNum2, monday: mon2, label: `Semaine ${type2.charAt(0).toUpperCase() + type2.slice(1)}`, range: `(N°${weekNum2}) ${this.formatDateShort(mon2)} - ${this.formatDateShort(fri2)}` }
+          { type: type1, num: weekNum1, monday: mon1, label: 'Semaine ' + type1.charAt(0).toUpperCase() + type1.slice(1), range: '(N°' + weekNum1 + ') ' + this.formatDateShort(mon1) + ' - ' + this.formatDateShort(fri1) },
+          { type: type2, num: weekNum2, monday: mon2, label: 'Semaine ' + type2.charAt(0).toUpperCase() + type2.slice(1), range: '(N°' + weekNum2 + ') ' + this.formatDateShort(mon2) + ' - ' + this.formatDateShort(fri2) }
         ];
-
-        this.currentWeekType = this.weeksList[0].type;
 
         document.getElementById('label-week-0').textContent = this.weeksList[0].label;
         document.getElementById('range-week-0').textContent = this.weeksList[0].range;
         document.getElementById('label-week-1').textContent = this.weeksList[1].label;
         document.getElementById('range-week-1').textContent = this.weeksList[1].range;
 
-        document.getElementById('header-date').textContent = `Aujourd'hui : ${now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+        document.getElementById('header-date').textContent = "Aujourd'hui : " + now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
         this.updateDayTabLabels();
       },
 
-      getDayDateString(dayIdx, weekType) {
-        const w = this.weeksList.find(x => x.type === weekType);
-        if (!w) return '';
+      getCurrentWeekObj() {
+        return this.weeksList[this.currentWeekIndex] || this.weeksList[0];
+      },
+
+      getDayDateString(dayIdx) {
+        const w = this.getCurrentWeekObj();
+        if (!w || !w.monday) return '--';
         const d = new Date(w.monday.getFullYear(), w.monday.getMonth(), w.monday.getDate() + dayIdx);
         return this.formatDateShort(d);
       },
 
       updateDayTabLabels() {
         this.DAYS.forEach((dayKey, idx) => {
-          const el = document.getElementById(`date-label-${dayKey}`);
-          if (el) el.textContent = this.getDayDateString(idx, this.currentWeekType);
+          const el = document.getElementById('date-label-' + dayKey);
+          if (el) el.textContent = this.getDayDateString(idx);
         });
       },
 
       switchWeekIndex(idx) {
-        const selected = this.weeksList[idx];
-        if (selected && this.currentWeekType !== selected.type) {
-          this.currentWeekType = selected.type;
+        if (this.currentWeekIndex !== idx) {
+          this.currentWeekIndex = idx;
           this.currentDay = 'mon';
 
           const b0 = document.getElementById('btn-week-0');
@@ -377,7 +391,7 @@
       switchDay(day) {
         this.currentDay = day;
         this.DAYS.forEach(d => {
-          const btn = document.getElementById(`tab-${d}`);
+          const btn = document.getElementById('tab-' + d);
           if (btn) {
             if (d === this.currentDay) {
               btn.className = "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-slate-900 text-white border-slate-900 shadow-sm";
@@ -399,25 +413,101 @@
         }
       },
 
-      getReservation(deskId, day = this.currentDay, weekType = this.currentWeekType) {
-        const val = this.reservations[`${weekType}_${day}_desk_${deskId}`];
+      getReservation(deskId, day) {
+        if (!day) day = this.currentDay;
+        const w = this.getCurrentWeekObj();
+        if (!w) return null;
+        const val = this.reservations['w_' + w.num + '_' + day + '_desk_' + deskId] || 
+                    this.reservations[w.type + '_' + day + '_desk_' + deskId];
         if (!val) return null;
-        if (typeof val === 'string') return { matin: val, aprem: val }; // Rétrocompatibilité
+        if (typeof val === 'string') return { matin: val, aprem: val };
         return val;
+      },
+
+      getStatus(day) {
+        if (!day) day = this.currentDay;
+        const w = this.getCurrentWeekObj();
+        if (!w) return null;
+        return this.statuses['w_' + w.num + '_' + day] || this.statuses[w.type + '_' + day] || null;
+      },
+
+      async toggleStatus(statusType) {
+        if (!this.myIdentity) this.changeIdentityPrompt();
+        if (!this.myIdentity) return;
+
+        const w = this.getCurrentWeekObj();
+        const key = 'w_' + w.num + '_' + this.currentDay;
+        const current = this.statuses[key];
+
+        if (current === statusType) {
+          delete this.statuses[key];
+          this.renderAll();
+          await this.syncFirebase();
+          return;
+        }
+
+        let hasMyReservation = false;
+        let reservedDeskId = null;
+        this.DESKS.forEach(desk => {
+          const res = this.getReservation(desk.id);
+          if (res && ((res.matin && res.matin.toLowerCase() === this.myIdentity.toLowerCase()) || 
+                      (res.aprem && res.aprem.toLowerCase() === this.myIdentity.toLowerCase()))) {
+            hasMyReservation = true;
+            reservedDeskId = desk.id;
+          }
+        });
+
+        if (hasMyReservation) {
+          const confirmRelease = confirm("Vous avez un bureau réservé (Bureau #" + reservedDeskId + "). Le libérer pour déclarer votre statut " + statusType + " ?");
+          if (!confirmRelease) return;
+
+          this.DESKS.forEach(desk => {
+            const rKey = 'w_' + w.num + '_' + this.currentDay + '_desk_' + desk.id;
+            delete this.reservations[rKey];
+            delete this.reservations[w.type + '_' + this.currentDay + '_desk_' + desk.id];
+          });
+        }
+
+        this.statuses[key] = statusType;
+        this.renderAll();
+        await this.syncFirebase();
       },
 
       renderAll() {
         document.getElementById('user-badge').textContent = this.myIdentity || 'Non défini';
         const dayIdx = this.DAYS.indexOf(this.currentDay);
-        document.getElementById('current-heading').textContent = `${this.DAY_NAMES[this.currentDay]} ${this.getDayDateString(dayIdx, this.currentWeekType)} (${this.currentWeekType.toUpperCase()})`;
+        const w = this.getCurrentWeekObj();
+        if (w) {
+          document.getElementById('current-heading').textContent = this.DAY_NAMES[this.currentDay] + ' ' + this.getDayDateString(dayIdx) + ' (' + w.label.toUpperCase() + ')';
+        }
 
+        this.renderStatusButtons();
         this.renderDesks();
         this.renderSummaryTable();
       },
 
+      renderStatusButtons() {
+        const currentStatus = this.getStatus();
+        const btnTt = document.getElementById('btn-status-tt');
+        const btnAbsent = document.getElementById('btn-status-absent');
+        const plateau = document.getElementById('plateau-container');
+
+        btnTt.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm";
+        btnAbsent.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm";
+        plateau.classList.remove('plan-locked');
+
+        if (currentStatus === 'TT') {
+          btnTt.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-blue-300 bg-blue-600 text-white shadow-md";
+          plateau.classList.add('plan-locked');
+        } else if (currentStatus === 'Absent') {
+          btnAbsent.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-rose-300 bg-rose-600 text-white shadow-md";
+          plateau.classList.add('plan-locked');
+        }
+      },
+
       renderDesks() {
         this.DESKS.forEach(desk => {
-          const slot = document.getElementById(`desk-card-${desk.id}`);
+          const slot = document.getElementById('desk-card-' + desk.id);
           if (!slot) return;
 
           const res = this.getReservation(desk.id);
@@ -425,7 +515,7 @@
           const hasAprem = res && !!res.aprem;
 
           if (!hasMatin && !hasAprem) {
-            slot.className = `desk-card ${desk.isAilleurs ? 'desk-free-flex' : 'desk-free-core'}`;
+            slot.className = 'desk-card ' + (desk.isAilleurs ? 'desk-free-flex' : 'desk-free-core');
             slot.innerHTML = `
               <div class="p-3 flex flex-col justify-between h-full">
                 <div class="flex justify-between items-start">
@@ -476,13 +566,13 @@
         if (!tbody) return;
 
         this.DAYS.forEach((dayKey, idx) => {
-          const th = document.getElementById(`th-${dayKey}`);
-          if (th) th.textContent = `${this.DAY_NAMES[dayKey].slice(0, 3)}. ${this.getDayDateString(idx, this.currentWeekType)}`;
+          const th = document.getElementById('th-' + dayKey);
+          if (th) th.textContent = this.DAY_NAMES[dayKey].slice(0, 3) + '. ' + this.getDayDateString(idx);
         });
 
         tbody.innerHTML = this.DESKS.map(desk => {
           const cells = this.DAYS.map(dayKey => {
-            const res = this.getReservation(desk.id, dayKey, this.currentWeekType);
+            const res = this.getReservation(desk.id, dayKey);
             if (!res) return `<td class="p-2 text-center text-slate-300 border-r border-slate-100 font-light">-</td>`;
             if (res.matin && res.aprem && res.matin === res.aprem) {
               return `<td class="p-2 text-center border-r border-slate-100">
@@ -508,15 +598,21 @@
       },
 
       openModal(deskId) {
+        if (this.getStatus()) {
+          alert("Vous avez déclaré un statut pour cette journée. Impossible de réserver.");
+          return;
+        }
+
         if (!this.myIdentity) this.changeIdentityPrompt();
         this.activeDeskId = deskId;
 
         const desk = this.DESKS.find(d => d.id === deskId);
         const res = this.getReservation(deskId) || {};
         const dayIdx = this.DAYS.indexOf(this.currentDay);
+        const w = this.getCurrentWeekObj();
 
         document.getElementById('modal-title').textContent = desk.name;
-        document.getElementById('modal-subtitle').textContent = `${this.DAY_NAMES[this.currentDay]} ${this.getDayDateString(dayIdx, this.currentWeekType)} (${this.currentWeekType.toUpperCase()})`;
+        document.getElementById('modal-subtitle').textContent = this.DAY_NAMES[this.currentDay] + ' ' + this.getDayDateString(dayIdx) + ' (' + w.label.toUpperCase() + ')';
         document.getElementById('modal-username').value = this.myIdentity;
 
         const optFull = document.getElementById('opt-label-full');
@@ -535,7 +631,7 @@
         deleteBtn.classList.add('hidden');
 
         if (isMatinOthers && isApremOthers) {
-          alert(`Ce bureau est déjà réservé par ${res.matin} (matin) et ${res.aprem} (après-midi). Vous ne pouvez pas modifier la réservation d'un collègue.`);
+          alert("Ce bureau est déjà entièrement réservé.");
           return;
         }
 
@@ -543,16 +639,29 @@
           optFull.classList.add('hidden');
           optMatin.classList.add('hidden');
           document.querySelector('input[name="slot-choice"][value="aprem"]').checked = true;
-          warning.textContent = `Remarque : Le matin est réservé par ${res.matin}. Vous pouvez réserver l'après-midi.`;
+          warning.textContent = "Matin réservé par " + res.matin + ". Seul l'après-midi est disponible.";
           warning.classList.remove('hidden');
         } else if (isApremOthers) {
           optFull.classList.add('hidden');
           optAprem.classList.add('hidden');
           document.querySelector('input[name="slot-choice"][value="matin"]').checked = true;
-          warning.textContent = `Remarque : L'après-midi est réservé par ${res.aprem}. Vous pouvez réserver le matin.`;
+          warning.textContent = "Après-midi réservé par " + res.aprem + ". Seul le matin est disponible.";
           warning.classList.remove('hidden');
         } else {
-          document.querySelector('input[name="slot-choice"][value="full"]').checked = true;
+          // Pré-cocher selon la réservation existante de l'utilisateur
+          const isMyFull = res.matin && res.aprem && res.matin === res.aprem && res.matin.toLowerCase() === this.myIdentity.toLowerCase();
+          const isMyMatin = res.matin && res.matin.toLowerCase() === this.myIdentity.toLowerCase() && (!res.aprem || res.aprem.toLowerCase() !== this.myIdentity.toLowerCase());
+          const isMyAprem = res.aprem && res.aprem.toLowerCase() === this.myIdentity.toLowerCase() && (!res.matin || res.matin.toLowerCase() !== this.myIdentity.toLowerCase());
+
+          if (isMyFull) {
+            document.querySelector('input[name="slot-choice"][value="full"]').checked = true;
+          } else if (isMyMatin) {
+            document.querySelector('input[name="slot-choice"][value="matin"]').checked = true;
+          } else if (isMyAprem) {
+            document.querySelector('input[name="slot-choice"][value="aprem"]').checked = true;
+          } else {
+            document.querySelector('input[name="slot-choice"][value="full"]').checked = true;
+          }
         }
 
         if ((res.matin && res.matin.toLowerCase() === this.myIdentity.toLowerCase()) || 
@@ -561,8 +670,8 @@
         }
 
         const modal = document.getElementById('modal-backdrop');
-        modal.classList.remove('hidden');
         modal.classList.add('flex');
+        modal.classList.remove('hidden');
       },
 
       closeModal() {
@@ -580,12 +689,17 @@
         localStorage.setItem('office_user_identity', this.myIdentity);
 
         const slotChoice = document.querySelector('input[name="slot-choice"]:checked').value;
-        const key = `${this.currentWeekType}_${this.currentDay}_desk_${this.activeDeskId}`;
-        let currentRes = this.getReservation(this.activeDeskId) || {};
-
-        if (slotChoice === 'full') currentRes = { matin: name, aprem: name };
-        else if (slotChoice === 'matin') currentRes.matin = name;
-        else if (slotChoice === 'aprem') currentRes.aprem = name;
+        const w = this.getCurrentWeekObj();
+        const key = 'w_' + w.num + '_' + this.currentDay + '_desk_' + this.activeDeskId;
+        
+        let currentRes = {};
+        if (slotChoice === 'full') {
+          currentRes = { matin: name, aprem: name };
+        } else if (slotChoice === 'matin') {
+          currentRes.matin = name;
+        } else if (slotChoice === 'aprem') {
+          currentRes.aprem = name;
+        }
 
         this.reservations[key] = currentRes;
         this.closeModal();
@@ -594,14 +708,10 @@
       },
 
       async deleteReservation() {
-        const key = `${this.currentWeekType}_${this.currentDay}_desk_${this.activeDeskId}`;
-        let currentRes = this.getReservation(this.activeDeskId) || {};
-
-        if (currentRes.matin && currentRes.matin.toLowerCase() === this.myIdentity.toLowerCase()) delete currentRes.matin;
-        if (currentRes.aprem && currentRes.aprem.toLowerCase() === this.myIdentity.toLowerCase()) delete currentRes.aprem;
-
-        if (!currentRes.matin && !currentRes.aprem) delete this.reservations[key];
-        else this.reservations[key] = currentRes;
+        const w = this.getCurrentWeekObj();
+        const key = 'w_' + w.num + '_' + this.currentDay + '_desk_' + this.activeDeskId;
+        delete this.reservations[key];
+        delete this.reservations[w.type + '_' + this.currentDay + '_desk_' + this.activeDeskId];
 
         this.closeModal();
         this.renderAll();
@@ -609,9 +719,15 @@
       },
 
       async clearCurrentWeek() {
-        if (confirm(`Voulez-vous supprimer toutes vos réservations pour cette semaine ?`)) {
-          Object.keys(this.reservations).forEach(key => {
-            if (key.startsWith(`${this.currentWeekType}_`)) delete this.reservations[key];
+        const w = this.getCurrentWeekObj();
+        if (confirm("Voulez-vous vider toute la semaine " + w.num + " ?")) {
+          const prefix1 = 'w_' + w.num + '_';
+          const prefix2 = w.type + '_';
+          Object.keys(this.reservations).forEach(k => { 
+            if (k.indexOf(prefix1) === 0 || k.indexOf(prefix2) === 0) delete this.reservations[k]; 
+          });
+          Object.keys(this.statuses).forEach(k => { 
+            if (k.indexOf(prefix1) === 0 || k.indexOf(prefix2) === 0) delete this.statuses[k]; 
           });
           this.renderAll();
           await this.syncFirebase();
@@ -620,31 +736,36 @@
 
       async loadFirebase() {
         try {
-          const res = await fetch(`${this.FIREBASE_URL}reservations.json`);
+          const res = await fetch(this.FIREBASE_URL + 'db.json');
           if (res.ok) {
             const data = await res.json();
-            this.reservations = (data && typeof data === 'object') ? data : {};
-            this.renderAll();
+            if (data && typeof data === 'object') {
+              this.reservations = data.reservations || {};
+              this.statuses = data.statuses || {};
+              this.renderAll();
+            }
           }
         } catch (e) {
-          console.error("Erreur Firebase:", e);
+          console.log("Mode hors-ligne");
         }
       },
 
       async syncFirebase() {
         try {
-          await fetch(`${this.FIREBASE_URL}reservations.json`, {
+          await fetch(this.FIREBASE_URL + 'db.json', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.reservations)
+            body: JSON.stringify({
+              reservations: this.reservations,
+              statuses: this.statuses
+            })
           });
         } catch (e) {
-          console.error("Erreur Sauvegarde Firebase:", e);
+          console.error("Erreur de sauvegarde:", e);
         }
       }
     };
 
-    // DÉMARRAGE SYNCHRONE GARANTI
     window.addEventListener('DOMContentLoaded', () => App.init());
   </script>
 </body>
