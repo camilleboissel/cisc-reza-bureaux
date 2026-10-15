@@ -9,7 +9,6 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
-
     .desk-card {
       height: 112px;
       border-radius: 12px;
@@ -25,22 +24,10 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .desk-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-
     .desk-free-core { background-color: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
     .desk-free-flex { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
-
-    .desk-occupied-full {
-      background-color: #2563eb !important;
-      border-color: #1d4ed8 !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 10px -1px rgba(37, 99, 235, 0.3);
-    }
-
-    .plan-locked {
-      opacity: 0.5;
-      pointer-events: none;
-      filter: grayscale(30%);
-    }
+    .desk-occupied-full { background-color: #2563eb !important; border-color: #1d4ed8 !important; color: #ffffff !important; }
+    .plan-locked { opacity: 0.5; pointer-events: none; filter: grayscale(30%); }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
@@ -53,23 +40,17 @@
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">Gestion du Plateau</h1>
-          <p class="text-xs text-slate-400" id="header-date">Chargement...</p>
+          <p class="text-xs text-slate-400" id="header-date">Aujourd'hui</p>
         </div>
       </div>
 
-      <div class="bg-slate-800 p-1 rounded-xl flex border border-slate-700 shadow-inner" id="week-selector-container">
+      <div class="bg-slate-800 p-1 rounded-xl flex border border-slate-700 shadow-inner">
         <button id="btn-week-0" onclick="App.switchWeekIndex(0)" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 bg-blue-600 text-white shadow-sm">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-calendar-days text-xs"></i>
-            <span id="label-week-0">Semaine Paire</span>
-          </div>
+          <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-xs"></i><span id="label-week-0">Semaine en cours</span></div>
           <span id="range-week-0" class="text-[10px] opacity-90 font-normal">--</span>
         </button>
         <button id="btn-week-1" onclick="App.switchWeekIndex(1)" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 text-slate-400 hover:text-white">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-calendar-days text-xs"></i>
-            <span id="label-week-1">Semaine Impaire</span>
-          </div>
+          <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-xs"></i><span id="label-week-1">Semaine prochaine</span></div>
           <span id="range-week-1" class="text-[10px] opacity-60 font-normal">--</span>
         </button>
       </div>
@@ -77,86 +58,41 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
-
     <!-- IDENTITÉ -->
     <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-3 text-xs">
       <div class="flex items-center gap-2">
-        <span class="text-slate-500">Vous êtes connecté(e) en tant que :</span>
+        <span class="text-slate-500">Connecté(e) en tant que :</span>
         <span id="user-badge" class="font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">Non défini</span>
       </div>
-      <button onclick="App.changeIdentityPrompt()" class="text-blue-600 hover:text-blue-800 font-semibold underline transition">
-        Changer mon prénom
-      </button>
+      <button onclick="App.changeIdentityPrompt()" class="text-blue-600 hover:text-blue-800 font-semibold underline transition">Changer mon prénom</button>
     </div>
 
     <!-- ONGLETS JOURS -->
-    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between gap-1.5" id="day-tabs-container">
-      <button onclick="App.switchDay('mon')" id="tab-mon" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-slate-900 text-white border-slate-900 shadow-sm">
-        <span class="font-bold text-sm">Lundi</span>
-        <span class="text-slate-300 text-[10px]" id="date-label-mon">--</span>
-      </button>
-      <button onclick="App.switchDay('tue')" id="tab-tue" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100">
-        <span class="font-bold text-sm">Mardi</span>
-        <span class="text-slate-400 text-[10px]" id="date-label-tue">--</span>
-      </button>
-      <button onclick="App.switchDay('wed')" id="tab-wed" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100">
-        <span class="font-bold text-sm">Mercredi</span>
-        <span class="text-slate-400 text-[10px]" id="date-label-wed">--</span>
-      </button>
-      <button onclick="App.switchDay('thu')" id="tab-thu" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100">
-        <span class="font-bold text-sm">Jeudi</span>
-        <span class="text-slate-400 text-[10px]" id="date-label-thu">--</span>
-      </button>
-      <button onclick="App.switchDay('fri')" id="tab-fri" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100">
-        <span class="font-bold text-sm">Vendredi</span>
-        <span class="text-slate-400 text-[10px]" id="date-label-fri">--</span>
-      </button>
+    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between gap-1.5">
+      <button onclick="App.switchDay('mon')" id="tab-mon" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-slate-900 text-white border-slate-900 shadow-sm"><span class="font-bold text-sm">Lundi</span><span class="text-slate-300 text-[10px]" id="date-label-mon">--</span></button>
+      <button onclick="App.switchDay('tue')" id="tab-tue" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100"><span class="font-bold text-sm">Mardi</span><span class="text-slate-400 text-[10px]" id="date-label-tue">--</span></button>
+      <button onclick="App.switchDay('wed')" id="tab-wed" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100"><span class="font-bold text-sm">Mercredi</span><span class="text-slate-400 text-[10px]" id="date-label-wed">--</span></button>
+      <button onclick="App.switchDay('thu')" id="tab-thu" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100"><span class="font-bold text-sm">Jeudi</span><span class="text-slate-400 text-[10px]" id="date-label-thu">--</span></button>
+      <button onclick="App.switchDay('fri')" id="tab-fri" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100"><span class="font-bold text-sm">Vendredi</span><span class="text-slate-400 text-[10px]" id="date-label-fri">--</span></button>
     </div>
 
-    <!-- STATUTS TT / ABSENT -->
+    <!-- STATUTS -->
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div>
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Mon statut pour cette journée</h3>
-        <p class="text-[11px] text-slate-500">Déclarez votre absence ou votre télétravail (bloque la réservation)</p>
+        <p class="text-[11px] text-slate-500">Déclarez votre absence ou votre télétravail</p>
       </div>
       <div class="flex items-center gap-2 w-full sm:w-auto">
-        <button id="btn-status-tt" onclick="App.toggleStatus('TT')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm">
-          <i class="fa-solid fa-house-laptop mr-1.5 text-blue-500"></i> Télétravail
-        </button>
-        <button id="btn-status-absent" onclick="App.toggleStatus('Absent')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm">
-          <i class="fa-solid fa-user-slash mr-1.5 text-rose-500"></i> Absent
-        </button>
-      </div>
-    </div>
-
-    <!-- LÉGENDE -->
-    <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
-      <p class="text-xs md:text-sm text-blue-900 font-medium">
-        Cliquez sur un bureau pour le réserver à la journée entière, le matin ou l'après-midi.
-      </p>
-      <div class="flex items-center gap-3 text-xs font-semibold">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Libre
-        </span>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-100 text-blue-800 border border-blue-200">
-          <span class="w-2 h-2 rounded-full bg-blue-600"></span> Occupé
-        </span>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-200 text-slate-700 border border-slate-300">
-          <span class="w-2 h-2 rounded-full bg-slate-400"></span> Zone Flex
-        </span>
+        <button id="btn-status-tt" onclick="App.toggleStatus('TT')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm"><i class="fa-solid fa-house-laptop mr-1.5 text-blue-500"></i> Télétravail</button>
+        <button id="btn-status-absent" onclick="App.toggleStatus('Absent')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm"><i class="fa-solid fa-user-slash mr-1.5 text-rose-500"></i> Absent</button>
       </div>
     </div>
 
     <!-- PLAN DU PLATEAU -->
     <div id="plateau-container" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6 transition-all">
       <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-        <h2 class="text-md md:text-lg font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-map-location-dot text-slate-400"></i>
-          Plan du Plateau
-        </h2>
-        <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200" id="current-heading">
-          --
-        </span>
+        <h2 class="text-md md:text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-slate-400"></i> Plan du Plateau</h2>
+        <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200" id="current-heading">--</span>
       </div>
 
       <div class="max-w-4xl mx-auto space-y-8">
@@ -171,16 +107,11 @@
             <div id="desk-card-7" class="desk-card desk-free-core" onclick="App.openModal(7)"></div>
             <div id="desk-card-8" class="desk-card desk-free-core" onclick="App.openModal(8)"></div>
           </div>
-          <div class="w-12 bg-slate-300 border-2 border-dashed border-slate-400 rounded-2xl flex flex-col justify-center items-center text-slate-500 font-bold tracking-widest text-xs select-none shadow-sm">
-            <span class="rotate-90 uppercase">MUR</span>
-          </div>
+          <div class="w-12 bg-slate-300 border-2 border-dashed border-slate-400 rounded-2xl flex flex-col justify-center items-center text-slate-500 font-bold tracking-widest text-xs select-none shadow-sm"><span class="rotate-90 uppercase">MUR</span></div>
         </div>
 
         <div class="pt-4 border-t border-slate-100">
-          <div class="flex items-center gap-2 mb-3">
-            <i class="fa-solid fa-couch text-slate-400 text-sm"></i>
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Zone Ailleurs / Flex</h3>
-          </div>
+          <div class="flex items-center gap-2 mb-3"><i class="fa-solid fa-couch text-slate-400 text-sm"></i><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Zone Ailleurs / Flex</h3></div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
             <div id="desk-card-9" class="desk-card desk-free-flex col-span-1" onclick="App.openModal(9)"></div>
             <div id="desk-card-10" class="desk-card desk-free-flex col-span-1" onclick="App.openModal(10)"></div>
@@ -190,17 +121,12 @@
     </div>
 
     <!-- RÉCAPITULATIF -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden space-y-4">
       <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-table-list text-slate-400"></i>
-          Récapitulatif de la semaine
-        </h2>
-        <button onclick="App.clearCurrentWeek()" class="text-xs text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 font-medium px-3 py-1.5 rounded-lg transition">
-          Vider cette semaine
-        </button>
+        <h2 class="text-md font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-table-list text-slate-400"></i> Récapitulatif de la semaine</h2>
+        <button onclick="App.clearCurrentWeek()" class="text-xs text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 font-medium px-3 py-1.5 rounded-lg transition">Vider cette semaine</button>
       </div>
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto px-4">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
             <tr class="bg-slate-100/80 text-slate-600 border-b border-slate-200">
@@ -212,12 +138,16 @@
               <th class="p-3 font-semibold text-center" id="th-fri">Ven</th>
             </tr>
           </thead>
-          <tbody id="summary-table-body" class="divide-y divide-slate-100 text-slate-700">
-          </tbody>
+          <tbody id="summary-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
         </table>
       </div>
-    </div>
 
+      <!-- STATUTS D'ÉQUIPE -->
+      <div class="p-4 bg-slate-50/70 border-t border-slate-200 space-y-2">
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-users-rectangle text-slate-400"></i> Statuts de l'équipe (Télétravail & Absents)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 text-xs" id="team-statuses-summary"></div>
+      </div>
+    </div>
   </main>
 
   <!-- MODALE -->
@@ -225,48 +155,35 @@
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h3 class="font-bold text-slate-800 text-lg" id="modal-title">Réserver</h3>
-        <button onclick="App.closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button onclick="App.closeModal()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
       <p class="text-xs text-slate-500" id="modal-subtitle">Choisissez votre créneau.</p>
-
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Votre Prénom</label>
           <input type="text" id="modal-username" placeholder="Ex: Camille" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
         </div>
-
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-2">Créneau d'occupation</label>
           <div class="space-y-2 text-xs">
-            <label id="opt-label-full" class="flex items-center p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
-              <input type="radio" name="slot-choice" value="full" checked class="text-blue-600 focus:ring-blue-500">
+            <label class="flex items-center p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+              <input type="radio" name="slot-choice" value="full" checked class="text-blue-600">
               <span class="ml-2.5 font-medium text-slate-800">Journée entière</span>
             </label>
-
-            <label id="opt-label-matin" class="flex items-center p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
-              <input type="radio" name="slot-choice" value="matin" class="text-blue-600 focus:ring-blue-500">
-              <span class="ml-2.5 font-medium text-slate-800">Matin uniquement (08h - 13h)</span>
+            <label class="flex items-center p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+              <input type="radio" name="slot-choice" value="matin" class="text-blue-600">
+              <span class="ml-2.5 font-medium text-slate-800">Matin uniquement</span>
             </label>
-
-            <label id="opt-label-aprem" class="flex items-center p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
-              <input type="radio" name="slot-choice" value="aprem" class="text-blue-600 focus:ring-blue-500">
-              <span class="ml-2.5 font-medium text-slate-800">Après-midi uniquement (13h - 18h)</span>
+            <label class="flex items-center p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+              <input type="radio" name="slot-choice" value="aprem" class="text-blue-600">
+              <span class="ml-2.5 font-medium text-slate-800">Après-midi uniquement</span>
             </label>
           </div>
         </div>
-
         <div id="modal-warning" class="text-[11px] text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200 hidden"></div>
-
         <div class="flex gap-2 pt-2">
-          <button onclick="App.saveReservation()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl text-sm transition shadow-sm">
-            Valider
-          </button>
-          <button id="btn-delete" onclick="App.deleteReservation()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold py-2 px-4 rounded-xl text-sm transition hidden">
-            Libérer
-          </button>
+          <button onclick="App.saveReservation()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl text-sm transition shadow-sm">Valider</button>
+          <button id="btn-delete" onclick="App.deleteReservation()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold py-2 px-4 rounded-xl text-sm transition hidden">Libérer</button>
         </div>
       </div>
     </div>
@@ -278,229 +195,225 @@
       DAYS: ['mon', 'tue', 'wed', 'thu', 'fri'],
       DAY_NAMES: { mon: 'Lundi', tue: 'Mardi', wed: 'Mercredi', thu: 'Jeudi', fri: 'Vendredi' },
       DESKS: [
-        { id: 1, name: "Bureau 1", isAilleurs: false },
-        { id: 2, name: "Bureau 2", isAilleurs: false },
-        { id: 3, name: "Bureau 3", isAilleurs: false },
-        { id: 4, name: "Bureau 4", isAilleurs: false },
-        { id: 5, name: "Bureau 5", isAilleurs: false },
-        { id: 6, name: "Bureau 6", isAilleurs: false },
-        { id: 7, name: "Bureau 7", isAilleurs: false },
-        { id: 8, name: "Bureau 8", isAilleurs: false },
-        { id: 9, name: "Ailleurs 1", isAilleurs: true },
-        { id: 10, name: "Ailleurs 2", isAilleurs: true }
+        { id: 1, name: "Bureau 1", isAilleurs: false }, { id: 2, name: "Bureau 2", isAilleurs: false },
+        { id: 3, name: "Bureau 3", isAilleurs: false }, { id: 4, name: "Bureau 4", isAilleurs: false },
+        { id: 5, name: "Bureau 5", isAilleurs: false }, { id: 6, name: "Bureau 6", isAilleurs: false },
+        { id: 7, name: "Bureau 7", isAilleurs: false }, { id: 8, name: "Bureau 8", isAilleurs: false },
+        { id: 9, name: "Ailleurs 1", isAilleurs: true }, { id: 10, name: "Ailleurs 2", isAilleurs: true }
       ],
-
       currentWeekIndex: 0,
       currentDay: 'mon',
       activeDeskId: null,
       reservations: {},
       statuses: {},
       myIdentity: localStorage.getItem('office_user_identity') || '',
-      weeksList: [],
+      weeks: [],
 
       init() {
-        try {
-          this.initCalendar();
-          this.renderAll();
-          this.loadFirebase();
-        } catch (e) {
-          console.error("Erreur init:", e);
-        }
+        this.initWeeks();
+        this.renderAll();
+        this.loadFirebase();
       },
 
-      formatDateShort(d) {
+      initWeeks() {
+        const now = new Date();
+        const day = now.getDay();
+        const diffToMon = (day === 0 ? -6 : 1) - day;
+        
+        const mondayS0 = new Date(now.getTime());
+        mondayS0.setDate(now.getDate() + diffToMon);
+        
+        const fridayS0 = new Date(mondayS0.getTime());
+        fridayS0.setDate(mondayS0.getDate() + 4);
+
+        const mondayS1 = new Date(mondayS0.getTime());
+        mondayS1.setDate(mondayS0.getDate() + 7);
+        
+        const fridayS1 = new Date(mondayS1.getTime());
+        fridayS1.setDate(mondayS1.getDate() + 4);
+
+        const fmt = d => {
+          const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+          return d.getDate() + ' ' + months[d.getMonth()];
+        };
+
+        this.weeks = [
+          { id: 'w0', label: 'Semaine en cours', range: fmt(mondayS0) + ' - ' + fmt(fridayS0), monday: mondayS0 },
+          { id: 'w1', label: 'Semaine prochaine', range: fmt(mondayS1) + ' - ' + fmt(fridayS1), monday: mondayS1 }
+        ];
+
+        const elL0 = document.getElementById('label-week-0');
+        const elR0 = document.getElementById('range-week-0');
+        const elL1 = document.getElementById('label-week-1');
+        const elR1 = document.getElementById('range-week-1');
+        const elH = document.getElementById('header-date');
+
+        if (elL0) elL0.textContent = this.weeks[0].label;
+        if (elR0) elR0.textContent = this.weeks[0].range;
+        if (elL1) elL1.textContent = this.weeks[1].label;
+        if (elR1) elR1.textContent = this.weeks[1].range;
+        if (elH) elH.textContent = "Aujourd'hui : " + now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        this.updateDayLabels();
+      },
+
+      getCurrentWeek() {
+        return this.weeks[this.currentWeekIndex] || this.weeks[0];
+      },
+
+      getDayDate(dayIndex) {
+        const w = this.getCurrentWeek();
+        if (!w || !w.monday) return '--';
+        const d = new Date(w.monday.getTime());
+        d.setDate(w.monday.getDate() + dayIndex);
         const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
         return d.getDate() + ' ' + months[d.getMonth()];
       },
 
-      initCalendar() {
-        const now = new Date();
-        const currentDayOfWeek = now.getDay();
-        const distanceToMonday = (currentDayOfWeek === 0 ? -6 : 1) - currentDayOfWeek;
-
-        const mon1 = new Date(now.getFullYear(), now.getMonth(), now.getDate() + distanceToMonday);
-        const fri1 = new Date(mon1.getFullYear(), mon1.getMonth(), mon1.getDate() + 4);
-
-        const mon2 = new Date(mon1.getFullYear(), mon1.getMonth(), mon1.getDate() + 7);
-        const fri2 = new Date(mon2.getFullYear(), mon2.getMonth(), mon2.getDate() + 4);
-
-        const target1 = new Date(mon1.valueOf());
-        const dayNr1 = (mon1.getDay() + 6) % 7;
-        target1.setDate(target1.getDate() - dayNr1 + 3);
-        const firstThursday1 = target1.valueOf();
-        target1.setMonth(0, 1);
-        if (target1.getDay() !== 4) target1.setMonth(0, 1 + ((4 - target1.getDay() + 7) % 7));
-        const weekNum1 = 1 + Math.ceil((firstThursday1 - target1) / 604800000);
-        const weekNum2 = weekNum1 + 1;
-
-        const type1 = (weekNum1 % 2 === 0) ? 'paire' : 'impaire';
-        const type2 = (weekNum2 % 2 === 0) ? 'paire' : 'impaire';
-
-        this.weeksList = [
-          { type: type1, num: weekNum1, monday: mon1, label: 'Semaine ' + type1.charAt(0).toUpperCase() + type1.slice(1), range: '(N°' + weekNum1 + ') ' + this.formatDateShort(mon1) + ' - ' + this.formatDateShort(fri1) },
-          { type: type2, num: weekNum2, monday: mon2, label: 'Semaine ' + type2.charAt(0).toUpperCase() + type2.slice(1), range: '(N°' + weekNum2 + ') ' + this.formatDateShort(mon2) + ' - ' + this.formatDateShort(fri2) }
-        ];
-
-        document.getElementById('label-week-0').textContent = this.weeksList[0].label;
-        document.getElementById('range-week-0').textContent = this.weeksList[0].range;
-        document.getElementById('label-week-1').textContent = this.weeksList[1].label;
-        document.getElementById('range-week-1').textContent = this.weeksList[1].range;
-
-        document.getElementById('header-date').textContent = "Aujourd'hui : " + now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-        this.updateDayTabLabels();
-      },
-
-      getCurrentWeekObj() {
-        return this.weeksList[this.currentWeekIndex] || this.weeksList[0];
-      },
-
-      getDayDateString(dayIdx) {
-        const w = this.getCurrentWeekObj();
-        if (!w || !w.monday) return '--';
-        const d = new Date(w.monday.getFullYear(), w.monday.getMonth(), w.monday.getDate() + dayIdx);
-        return this.formatDateShort(d);
-      },
-
-      updateDayTabLabels() {
-        this.DAYS.forEach((dayKey, idx) => {
-          const el = document.getElementById('date-label-' + dayKey);
-          if (el) el.textContent = this.getDayDateString(idx);
+      updateDayLabels() {
+        this.DAYS.forEach((dKey, idx) => {
+          const el = document.getElementById('date-label-' + dKey);
+          if (el) el.textContent = this.getDayDate(idx);
         });
       },
 
       switchWeekIndex(idx) {
-        if (this.currentWeekIndex !== idx) {
-          this.currentWeekIndex = idx;
-          this.currentDay = 'mon';
-
-          const b0 = document.getElementById('btn-week-0');
-          const b1 = document.getElementById('btn-week-1');
-
-          if (idx === 0) {
-            b0.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 bg-blue-600 text-white shadow-sm";
-            b1.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 text-slate-400 hover:text-white";
-          } else {
-            b1.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 bg-blue-600 text-white shadow-sm";
-            b0.className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 text-slate-400 hover:text-white";
-          }
-
-          this.switchDay('mon');
-        }
+        this.currentWeekIndex = idx;
+        this.currentDay = 'mon';
+        const b0 = document.getElementById('btn-week-0');
+        const b1 = document.getElementById('btn-week-1');
+        if (b0) b0.className = idx === 0 ? "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 bg-blue-600 text-white shadow-sm" : "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 text-slate-400 hover:text-white";
+        if (b1) b1.className = idx === 1 ? "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 bg-blue-600 text-white shadow-sm" : "px-4 py-2 rounded-lg text-sm font-semibold transition-all flex flex-col items-center gap-0.5 text-slate-400 hover:text-white";
+        this.updateDayLabels();
+        this.renderAll();
       },
 
       switchDay(day) {
         this.currentDay = day;
         this.DAYS.forEach(d => {
           const btn = document.getElementById('tab-' + d);
-          if (btn) {
-            if (d === this.currentDay) {
-              btn.className = "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-slate-900 text-white border-slate-900 shadow-sm";
-            } else {
-              btn.className = "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100";
-            }
-          }
+          if (btn) btn.className = d === this.currentDay ? "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-slate-900 text-white border-slate-900 shadow-sm" : "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-medium text-xs transition-all flex flex-col items-center gap-0.5 border bg-white text-slate-600 border-transparent hover:bg-slate-100";
         });
-        this.updateDayTabLabels();
         this.renderAll();
       },
 
       changeIdentityPrompt() {
-        let name = prompt("Saisissez votre prénom pour vos réservations :", this.myIdentity);
+        let name = prompt("Saisissez votre prénom :", this.myIdentity);
         if (name && name.trim()) {
           this.myIdentity = name.trim();
           localStorage.setItem('office_user_identity', this.myIdentity);
-          document.getElementById('user-badge').textContent = this.myIdentity;
+          const badge = document.getElementById('user-badge');
+          if (badge) badge.textContent = this.myIdentity;
+          this.renderAll();
         }
+      },
+
+      checkIdentity() {
+        if (!this.myIdentity || !this.myIdentity.trim()) {
+          this.changeIdentityPrompt();
+        }
+        return !!(this.myIdentity && this.myIdentity.trim());
       },
 
       getReservation(deskId, day) {
         if (!day) day = this.currentDay;
-        const w = this.getCurrentWeekObj();
-        if (!w) return null;
-        const val = this.reservations['w_' + w.num + '_' + day + '_desk_' + deskId] || 
-                    this.reservations[w.type + '_' + day + '_desk_' + deskId];
+        const w = this.getCurrentWeek();
+        const val = this.reservations[w.id + '_' + day + '_desk_' + deskId];
         if (!val) return null;
-        if (typeof val === 'string') return { matin: val, aprem: val };
-        return val;
+        return typeof val === 'string' ? { matin: val, aprem: val } : val;
       },
 
-      getStatus(day) {
+      getUserStatus(day) {
         if (!day) day = this.currentDay;
-        const w = this.getCurrentWeekObj();
-        if (!w) return null;
-        return this.statuses['w_' + w.num + '_' + day] || this.statuses[w.type + '_' + day] || null;
+        if (!this.myIdentity) return null;
+        const w = this.getCurrentWeek();
+        const dayStatuses = this.statuses[w.id + '_' + day];
+        if (!dayStatuses) return null;
+        const userKey = this.myIdentity.trim().toLowerCase();
+        return dayStatuses[userKey] ? dayStatuses[userKey].type : null;
       },
 
       async toggleStatus(statusType) {
-        if (!this.myIdentity) this.changeIdentityPrompt();
-        if (!this.myIdentity) return;
+        if (!this.checkIdentity()) return;
 
-        const w = this.getCurrentWeekObj();
-        const key = 'w_' + w.num + '_' + this.currentDay;
-        const current = this.statuses[key];
+        const w = this.getCurrentWeek();
+        const key = w.id + '_' + this.currentDay;
+        const userKey = this.myIdentity.trim().toLowerCase();
+        const currentStatus = this.getUserStatus();
 
-        if (current === statusType) {
-          delete this.statuses[key];
+        if (!this.statuses[key]) {
+          this.statuses[key] = {};
+        }
+
+        if (currentStatus === statusType) {
+          delete this.statuses[key][userKey];
+          if (Object.keys(this.statuses[key]).length === 0) {
+            delete this.statuses[key];
+          }
           this.renderAll();
           await this.syncFirebase();
           return;
         }
 
-        let hasMyReservation = false;
-        let reservedDeskId = null;
+        let reservedDeskNames = [];
         this.DESKS.forEach(desk => {
-          const res = this.getReservation(desk.id);
-          if (res && ((res.matin && res.matin.toLowerCase() === this.myIdentity.toLowerCase()) || 
-                      (res.aprem && res.aprem.toLowerCase() === this.myIdentity.toLowerCase()))) {
-            hasMyReservation = true;
-            reservedDeskId = desk.id;
+          const res = this.getReservation(desk.id, this.currentDay);
+          if (res) {
+            const matchesMatin = res.matin && res.matin.trim().toLowerCase() === userKey;
+            const matchesAprem = res.aprem && res.aprem.trim().toLowerCase() === userKey;
+            if (matchesMatin || matchesAprem) {
+              reservedDeskNames.push({ id: desk.id, name: desk.name });
+            }
           }
         });
 
-        if (hasMyReservation) {
-          const confirmRelease = confirm("Vous avez un bureau réservé (Bureau #" + reservedDeskId + "). Le libérer pour déclarer votre statut " + statusType + " ?");
+        if (reservedDeskNames.length > 0) {
+          const deskListStr = reservedDeskNames.map(d => d.name).join(', ');
+          const confirmRelease = confirm("Vous avez une réservation active (" + deskListStr + ") pour cette journée. Voulez-vous libérer ce(s) bureau(x) pour basculer en statut '" + statusType + "' ?");
           if (!confirmRelease) return;
 
-          this.DESKS.forEach(desk => {
-            const rKey = 'w_' + w.num + '_' + this.currentDay + '_desk_' + desk.id;
+          reservedDeskNames.forEach(d => {
+            const rKey = w.id + '_' + this.currentDay + '_desk_' + d.id;
             delete this.reservations[rKey];
-            delete this.reservations[w.type + '_' + this.currentDay + '_desk_' + desk.id];
           });
         }
 
-        this.statuses[key] = statusType;
+        this.statuses[key][userKey] = { name: this.myIdentity.trim(), type: statusType };
         this.renderAll();
         await this.syncFirebase();
       },
 
       renderAll() {
-        document.getElementById('user-badge').textContent = this.myIdentity || 'Non défini';
+        const badge = document.getElementById('user-badge');
+        if (badge) badge.textContent = this.myIdentity || 'Non défini';
+        
+        const w = this.getCurrentWeek();
         const dayIdx = this.DAYS.indexOf(this.currentDay);
-        const w = this.getCurrentWeekObj();
-        if (w) {
-          document.getElementById('current-heading').textContent = this.DAY_NAMES[this.currentDay] + ' ' + this.getDayDateString(dayIdx) + ' (' + w.label.toUpperCase() + ')';
-        }
+        const heading = document.getElementById('current-heading');
+        if (heading) heading.textContent = this.DAY_NAMES[this.currentDay] + ' ' + this.getDayDate(dayIdx) + ' (' + w.label + ')';
 
         this.renderStatusButtons();
         this.renderDesks();
         this.renderSummaryTable();
+        this.renderTeamStatusesSummary();
       },
 
       renderStatusButtons() {
-        const currentStatus = this.getStatus();
+        const st = this.getUserStatus();
         const btnTt = document.getElementById('btn-status-tt');
-        const btnAbsent = document.getElementById('btn-status-absent');
+        const btnAbs = document.getElementById('btn-status-absent');
         const plateau = document.getElementById('plateau-container');
+        if (!btnTt || !btnAbs || !plateau) return;
 
         btnTt.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm";
-        btnAbsent.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm";
+        btnAbs.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition shadow-sm";
         plateau.classList.remove('plan-locked');
 
-        if (currentStatus === 'TT') {
+        if (st === 'TT') {
           btnTt.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-blue-300 bg-blue-600 text-white shadow-md";
           plateau.classList.add('plan-locked');
-        } else if (currentStatus === 'Absent') {
-          btnAbsent.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-rose-300 bg-rose-600 text-white shadow-md";
+        } else if (st === 'Absent') {
+          btnAbs.className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold border border-rose-300 bg-rose-600 text-white shadow-md";
           plateau.classList.add('plan-locked');
         }
       },
@@ -509,54 +422,19 @@
         this.DESKS.forEach(desk => {
           const slot = document.getElementById('desk-card-' + desk.id);
           if (!slot) return;
-
           const res = this.getReservation(desk.id);
-          const hasMatin = res && !!res.matin;
-          const hasAprem = res && !!res.aprem;
+          const hasM = res && !!res.matin;
+          const hasA = res && !!res.aprem;
 
-          if (!hasMatin && !hasAprem) {
+          if (!hasM && !hasA) {
             slot.className = 'desk-card ' + (desk.isAilleurs ? 'desk-free-flex' : 'desk-free-core');
-            slot.innerHTML = `
-              <div class="p-3 flex flex-col justify-between h-full">
-                <div class="flex justify-between items-start">
-                  <span class="text-xs font-bold">${desk.name}</span>
-                  <i class="fa-solid ${desk.isAilleurs ? 'fa-couch text-slate-400' : 'fa-desktop text-emerald-500'} text-xs"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-bold text-emerald-700">Libre</div>
-                  <div class="text-[10px] text-slate-400">Cliquer pour réserver</div>
-                </div>
-              </div>`;
-          } else if (hasMatin && hasAprem && res.matin === res.aprem) {
+            slot.innerHTML = `<div class="p-3 flex flex-col justify-between h-full"><div class="flex justify-between items-start"><span class="text-xs font-bold">${desk.name}</span><i class="fa-solid ${desk.isAilleurs ? 'fa-couch text-slate-400' : 'fa-desktop text-emerald-500'} text-xs"></i></div><div><div class="text-xs font-bold text-emerald-700">Libre</div><div class="text-[10px] text-slate-400">Cliquer pour réserver</div></div></div>`;
+          } else if (hasM && hasA && res.matin === res.aprem) {
             slot.className = 'desk-card desk-occupied-full';
-            slot.innerHTML = `
-              <div class="p-3 flex flex-col justify-between h-full">
-                <div class="flex justify-between items-start">
-                  <span class="text-xs font-bold text-white">${desk.name}</span>
-                  <i class="fa-solid fa-user-check text-blue-200 text-xs"></i>
-                </div>
-                <div>
-                  <div class="font-extrabold text-sm text-white truncate">${res.matin}</div>
-                  <div class="text-[10px] text-blue-100 font-medium">Journée entière</div>
-                </div>
-              </div>`;
+            slot.innerHTML = `<div class="p-3 flex flex-col justify-between h-full"><div class="flex justify-between items-start"><span class="text-xs font-bold text-white">${desk.name}</span><i class="fa-solid fa-user-check text-blue-200 text-xs"></i></div><div><div class="font-extrabold text-sm text-white truncate">${res.matin}</div><div class="text-[10px] text-blue-100 font-medium">Journée entière</div></div></div>`;
           } else {
             slot.className = 'desk-card';
-            slot.innerHTML = `
-              <div class="bg-slate-800 text-white px-2.5 py-1 text-[10px] font-bold flex justify-between items-center">
-                <span>${desk.name}</span>
-                <i class="fa-solid fa-clock-half-day text-[9px] text-slate-300"></i>
-              </div>
-              <div class="grid grid-rows-2 h-full text-xs">
-                <div class="px-2.5 py-1 border-b border-slate-200 flex items-center justify-between ${hasMatin ? 'bg-blue-600 text-white font-bold' : 'bg-emerald-50 text-emerald-800'}">
-                  <span class="text-[10px] opacity-80">Matin:</span>
-                  <span class="font-bold truncate max-w-[85px]">${hasMatin ? res.matin : 'Libre'}</span>
-                </div>
-                <div class="px-2.5 py-1 flex items-center justify-between ${hasAprem ? 'bg-blue-600 text-white font-bold' : 'bg-emerald-50 text-emerald-800'}">
-                  <span class="text-[10px] opacity-80">Aprem:</span>
-                  <span class="font-bold truncate max-w-[85px]">${hasAprem ? res.aprem : 'Libre'}</span>
-                </div>
-              </div>`;
+            slot.innerHTML = `<div class="bg-slate-800 text-white px-2.5 py-1 text-[10px] font-bold flex justify-between items-center"><span>${desk.name}</span><i class="fa-solid fa-clock-half-day text-[9px] text-slate-300"></i></div><div class="grid grid-rows-2 h-full text-xs"><div class="px-2.5 py-1 border-b border-slate-200 flex items-center justify-between ${hasM ? 'bg-blue-600 text-white font-bold' : 'bg-emerald-50 text-emerald-800'}"><span class="text-[10px] opacity-80">Matin:</span><span class="font-bold truncate max-w-[85px]">${hasM ? res.matin : 'Libre'}</span></div><div class="px-2.5 py-1 flex items-center justify-between ${hasA ? 'bg-blue-600 text-white font-bold' : 'bg-emerald-50 text-emerald-800'}"><span class="text-[10px] opacity-80">Aprem:</span><span class="font-bold truncate max-w-[85px]">${hasA ? res.aprem : 'Libre'}</span></div></div>`;
           }
         });
       },
@@ -564,154 +442,160 @@
       renderSummaryTable() {
         const tbody = document.getElementById('summary-table-body');
         if (!tbody) return;
-
-        this.DAYS.forEach((dayKey, idx) => {
-          const th = document.getElementById('th-' + dayKey);
-          if (th) th.textContent = this.DAY_NAMES[dayKey].slice(0, 3) + '. ' + this.getDayDateString(idx);
+        this.DAYS.forEach((dKey, idx) => {
+          const th = document.getElementById('th-' + dKey);
+          if (th) th.textContent = this.DAY_NAMES[dKey].slice(0, 3) + '. ' + this.getDayDate(idx);
         });
 
         tbody.innerHTML = this.DESKS.map(desk => {
           const cells = this.DAYS.map(dayKey => {
             const res = this.getReservation(desk.id, dayKey);
-            if (!res) return `<td class="p-2 text-center text-slate-300 border-r border-slate-100 font-light">-</td>`;
+            if (!res) return `<td class="p-2 text-center text-slate-300 border-r border-slate-100">-</td>`;
             if (res.matin && res.aprem && res.matin === res.aprem) {
-              return `<td class="p-2 text-center border-r border-slate-100">
-                <span class="inline-block px-2 py-1 rounded-md bg-blue-100 text-blue-900 font-bold text-[11px] truncate max-w-[90px] shadow-sm">${res.matin}</span>
-              </td>`;
+              return `<td class="p-2 text-center border-r border-slate-100"><span class="inline-block px-2 py-1 rounded-md bg-blue-100 text-blue-900 font-bold text-[11px] truncate max-w-[90px]">${res.matin}</span></td>`;
             }
-            return `<td class="p-1.5 text-center border-r border-slate-100">
-              <div class="space-y-1">
-                ${res.matin ? `<span class="block px-1.5 py-0.5 rounded bg-blue-100 text-blue-900 font-semibold text-[10px] truncate">M: ${res.matin}</span>` : ''}
-                ${res.aprem ? `<span class="block px-1.5 py-0.5 rounded bg-blue-100 text-blue-900 font-semibold text-[10px] truncate">A: ${res.aprem}</span>` : ''}
-              </div>
-            </td>`;
+            return `<td class="p-1.5 text-center border-r border-slate-100"><div class="space-y-1">${res.matin ? `<span class="block px-1 py-0.5 rounded bg-blue-100 text-blue-900 font-semibold text-[10px] truncate">M: ${res.matin}</span>` : ''}${res.aprem ? `<span class="block px-1 py-0.5 rounded bg-blue-100 text-blue-900 font-semibold text-[10px] truncate">A: ${res.aprem}</span>` : ''}</div></td>`;
           }).join('');
+          return `<tr class="${desk.isAilleurs ? 'bg-slate-50/60' : ''}"><td class="p-3 font-semibold text-slate-800 border-r border-slate-100"><span class="font-mono text-blue-500 mr-1">#${desk.id}</span>${desk.name}</td>${cells}</tr>`;
+        }).join('');
+      },
 
-          return `<tr class="${desk.isAilleurs ? 'bg-slate-50/60' : ''}">
-            <td class="p-3 font-semibold text-slate-800 border-r border-slate-100 flex items-center gap-2">
-              <span class="${desk.isAilleurs ? 'text-slate-400' : 'text-blue-500'} font-mono">#${desk.id}</span>
-              ${desk.name}
-            </td>
-            ${cells}
-          </tr>`;
+      renderTeamStatusesSummary() {
+        const container = document.getElementById('team-statuses-summary');
+        if (!container) return;
+        const w = this.getCurrentWeek();
+
+        container.innerHTML = this.DAYS.map((dayKey, idx) => {
+          const dayStatuses = this.statuses[w.id + '_' + dayKey] || {};
+          const ttList = [];
+          const absList = [];
+
+          Object.values(dayStatuses).forEach(u => {
+            if (u && u.type === 'TT') ttList.push(u.name);
+            if (u && u.type === 'Absent') absList.push(u.name);
+          });
+
+          return `<div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-1.5"><span class="font-bold text-slate-800 border-b border-slate-100 pb-1">${this.DAY_NAMES[dayKey]} ${this.getDayDate(idx)}</span><div class="space-y-1 text-[11px]"><div class="text-slate-600"><span class="font-semibold"><i class="fa-solid fa-house-laptop text-blue-500 mr-1"></i> TT:</span> ${ttList.length ? `<span class="text-blue-700 font-semibold">${ttList.join(', ')}</span>` : '<span class="text-slate-400">Aucun</span>'}</div><div class="text-slate-600"><span class="font-semibold"><i class="fa-solid fa-user-slash text-rose-500 mr-1"></i> Absent:</span> ${absList.length ? `<span class="text-rose-700 font-semibold">${absList.join(', ')}</span>` : '<span class="text-slate-400">Aucun</span>'}</div></div></div>`;
         }).join('');
       },
 
       openModal(deskId) {
-        if (this.getStatus()) {
-          alert("Vous avez déclaré un statut pour cette journée. Impossible de réserver.");
-          return;
+        if (!this.checkIdentity()) return;
+        if (this.getUserStatus()) { 
+          alert("Vous avez déclaré un statut pour cette journée. Impossible de réserver."); 
+          return; 
         }
-
-        if (!this.myIdentity) this.changeIdentityPrompt();
+        
         this.activeDeskId = deskId;
-
         const desk = this.DESKS.find(d => d.id === deskId);
-        const res = this.getReservation(deskId) || {};
-        const dayIdx = this.DAYS.indexOf(this.currentDay);
-        const w = this.getCurrentWeekObj();
+        const titleEl = document.getElementById('modal-title');
+        const userEl = document.getElementById('modal-username');
+        const modal = document.getElementById('modal-backdrop');
+        const btnDelete = document.getElementById('btn-delete');
 
-        document.getElementById('modal-title').textContent = desk.name;
-        document.getElementById('modal-subtitle').textContent = this.DAY_NAMES[this.currentDay] + ' ' + this.getDayDateString(dayIdx) + ' (' + w.label.toUpperCase() + ')';
-        document.getElementById('modal-username').value = this.myIdentity;
+        if (titleEl) titleEl.textContent = desk.name;
+        if (userEl) userEl.value = this.myIdentity;
 
-        const optFull = document.getElementById('opt-label-full');
-        const optMatin = document.getElementById('opt-label-matin');
-        const optAprem = document.getElementById('opt-label-aprem');
-        const warning = document.getElementById('modal-warning');
-        const deleteBtn = document.getElementById('btn-delete');
+        const res = this.getReservation(deskId);
+        const userKey = this.myIdentity.trim().toLowerCase();
+        
+        const hasMyMatin = res && res.matin && res.matin.trim().toLowerCase() === userKey;
+        const hasMyAprem = res && res.aprem && res.aprem.trim().toLowerCase() === userKey;
+        const userHasRes = hasMyMatin || hasMyAprem;
 
-        const isMatinOthers = res.matin && res.matin.toLowerCase() !== this.myIdentity.toLowerCase();
-        const isApremOthers = res.aprem && res.aprem.toLowerCase() !== this.myIdentity.toLowerCase();
-
-        optFull.classList.remove('hidden');
-        optMatin.classList.remove('hidden');
-        optAprem.classList.remove('hidden');
-        warning.classList.add('hidden');
-        deleteBtn.classList.add('hidden');
-
-        if (isMatinOthers && isApremOthers) {
-          alert("Ce bureau est déjà entièrement réservé.");
-          return;
+        // Pré-sélection des boutons radio selon l'état exact de l'utilisateur
+        const radios = document.querySelectorAll('input[name="slot-choice"]');
+        if (hasMyMatin && hasMyAprem) {
+          radios[0].checked = true; // Journée entière
+        } else if (hasMyMatin && !hasMyAprem) {
+          radios[1].checked = true; // Matin uniquement
+        } else if (!hasMyMatin && hasMyAprem) {
+          radios[2].checked = true; // Après-midi uniquement
+        } else {
+          radios[0].checked = true; // Choix par défaut pour une nouvelle réservation
         }
 
-        if (isMatinOthers) {
-          optFull.classList.add('hidden');
-          optMatin.classList.add('hidden');
-          document.querySelector('input[name="slot-choice"][value="aprem"]').checked = true;
-          warning.textContent = "Matin réservé par " + res.matin + ". Seul l'après-midi est disponible.";
-          warning.classList.remove('hidden');
-        } else if (isApremOthers) {
-          optFull.classList.add('hidden');
-          optAprem.classList.add('hidden');
-          document.querySelector('input[name="slot-choice"][value="matin"]').checked = true;
-          warning.textContent = "Après-midi réservé par " + res.aprem + ". Seul le matin est disponible.";
-          warning.classList.remove('hidden');
-        } else {
-          // Pré-cocher selon la réservation existante de l'utilisateur
-          const isMyFull = res.matin && res.aprem && res.matin === res.aprem && res.matin.toLowerCase() === this.myIdentity.toLowerCase();
-          const isMyMatin = res.matin && res.matin.toLowerCase() === this.myIdentity.toLowerCase() && (!res.aprem || res.aprem.toLowerCase() !== this.myIdentity.toLowerCase());
-          const isMyAprem = res.aprem && res.aprem.toLowerCase() === this.myIdentity.toLowerCase() && (!res.matin || res.matin.toLowerCase() !== this.myIdentity.toLowerCase());
-
-          if (isMyFull) {
-            document.querySelector('input[name="slot-choice"][value="full"]').checked = true;
-          } else if (isMyMatin) {
-            document.querySelector('input[name="slot-choice"][value="matin"]').checked = true;
-          } else if (isMyAprem) {
-            document.querySelector('input[name="slot-choice"][value="aprem"]').checked = true;
+        if (btnDelete) {
+          if (userHasRes) {
+            btnDelete.classList.remove('hidden');
           } else {
-            document.querySelector('input[name="slot-choice"][value="full"]').checked = true;
+            btnDelete.classList.add('hidden');
           }
         }
 
-        if ((res.matin && res.matin.toLowerCase() === this.myIdentity.toLowerCase()) || 
-            (res.aprem && res.aprem.toLowerCase() === this.myIdentity.toLowerCase())) {
-          deleteBtn.classList.remove('hidden');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
         }
-
-        const modal = document.getElementById('modal-backdrop');
-        modal.classList.add('flex');
-        modal.classList.remove('hidden');
       },
 
       closeModal() {
         const modal = document.getElementById('modal-backdrop');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
         this.activeDeskId = null;
       },
 
       async saveReservation() {
-        const name = document.getElementById('modal-username').value.trim();
+        const nameInput = document.getElementById('modal-username');
+        const name = nameInput ? nameInput.value.trim() : '';
         if (!name) return alert('Veuillez entrer votre prénom.');
-
+        
         this.myIdentity = name;
         localStorage.setItem('office_user_identity', this.myIdentity);
 
-        const slotChoice = document.querySelector('input[name="slot-choice"]:checked').value;
-        const w = this.getCurrentWeekObj();
-        const key = 'w_' + w.num + '_' + this.currentDay + '_desk_' + this.activeDeskId;
-        
-        let currentRes = {};
-        if (slotChoice === 'full') {
-          currentRes = { matin: name, aprem: name };
-        } else if (slotChoice === 'matin') {
-          currentRes.matin = name;
-        } else if (slotChoice === 'aprem') {
-          currentRes.aprem = name;
+        const slotChecked = document.querySelector('input[name="slot-choice"]:checked');
+        const slot = slotChecked ? slotChecked.value : 'full';
+        const w = this.getCurrentWeek();
+        const key = w.id + '_' + this.currentDay + '_desk_' + this.activeDeskId;
+        const userKey = name.toLowerCase();
+
+        const currentRes = this.reservations[key] || {};
+
+        // Libération des créneaux appartenant déjà à cet utilisateur
+        let newMatin = (currentRes.matin && currentRes.matin.trim().toLowerCase() === userKey) ? null : currentRes.matin;
+        let newAprem = (currentRes.aprem && currentRes.aprem.trim().toLowerCase() === userKey) ? null : currentRes.aprem;
+
+        // Application du nouveau créneau
+        if (slot === 'full') {
+          newMatin = name;
+          newAprem = name;
+        } else if (slot === 'matin') {
+          newMatin = name;
+        } else if (slot === 'aprem') {
+          newAprem = name;
         }
 
-        this.reservations[key] = currentRes;
+        // Sauvegarde propre
+        if (!newMatin && !newAprem) {
+          delete this.reservations[key];
+        } else {
+          this.reservations[key] = {};
+          if (newMatin) this.reservations[key].matin = newMatin;
+          if (newAprem) this.reservations[key].aprem = newAprem;
+        }
+
         this.closeModal();
         this.renderAll();
         await this.syncFirebase();
       },
 
       async deleteReservation() {
-        const w = this.getCurrentWeekObj();
-        const key = 'w_' + w.num + '_' + this.currentDay + '_desk_' + this.activeDeskId;
-        delete this.reservations[key];
-        delete this.reservations[w.type + '_' + this.currentDay + '_desk_' + this.activeDeskId];
+        const w = this.getCurrentWeek();
+        const key = w.id + '_' + this.currentDay + '_desk_' + this.activeDeskId;
+        const res = this.reservations[key];
+        const userKey = this.myIdentity.trim().toLowerCase();
+
+        if (res) {
+          if (res.matin && res.matin.trim().toLowerCase() === userKey) delete res.matin;
+          if (res.aprem && res.aprem.trim().toLowerCase() === userKey) delete res.aprem;
+
+          if (!res.matin && !res.aprem) {
+            delete this.reservations[key];
+          }
+        }
 
         this.closeModal();
         this.renderAll();
@@ -719,35 +603,28 @@
       },
 
       async clearCurrentWeek() {
-        const w = this.getCurrentWeekObj();
-        if (confirm("Voulez-vous vider toute la semaine " + w.num + " ?")) {
-          const prefix1 = 'w_' + w.num + '_';
-          const prefix2 = w.type + '_';
-          Object.keys(this.reservations).forEach(k => { 
-            if (k.indexOf(prefix1) === 0 || k.indexOf(prefix2) === 0) delete this.reservations[k]; 
-          });
-          Object.keys(this.statuses).forEach(k => { 
-            if (k.indexOf(prefix1) === 0 || k.indexOf(prefix2) === 0) delete this.statuses[k]; 
-          });
+        const w = this.getCurrentWeek();
+        if (confirm("Voulez-vous vider toute la semaine ?")) {
+          Object.keys(this.reservations).forEach(k => { if (k.startsWith(w.id + '_')) delete this.reservations[k]; });
+          Object.keys(this.statuses).forEach(k => { if (k.startsWith(w.id + '_')) delete this.statuses[k]; });
           this.renderAll();
           await this.syncFirebase();
         }
       },
 
-      async loadFirebase() {
-        try {
-          const res = await fetch(this.FIREBASE_URL + 'db.json');
-          if (res.ok) {
-            const data = await res.json();
-            if (data && typeof data === 'object') {
+      loadFirebase() {
+        fetch(this.FIREBASE_URL + 'db.json')
+          .then(res => res.json())
+          .then(data => {
+            if (data) {
               this.reservations = data.reservations || {};
               this.statuses = data.statuses || {};
               this.renderAll();
             }
-          }
-        } catch (e) {
-          console.log("Mode hors-ligne");
-        }
+          })
+          .catch(e => {
+            console.warn("Firebase non accessible (mode local actif)");
+          });
       },
 
       async syncFirebase() {
@@ -755,18 +632,15 @@
           await fetch(this.FIREBASE_URL + 'db.json', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              reservations: this.reservations,
-              statuses: this.statuses
-            })
+            body: JSON.stringify({ reservations: this.reservations, statuses: this.statuses })
           });
         } catch (e) {
-          console.error("Erreur de sauvegarde:", e);
+          console.error("Erreur sync:", e);
         }
       }
     };
 
-    window.addEventListener('DOMContentLoaded', () => App.init());
+    window.onload = () => App.init();
   </script>
 </body>
 </html>
